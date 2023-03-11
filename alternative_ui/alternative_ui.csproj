@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
@@ -8,6 +8,14 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <RootNamespace>AUI</RootNamespace>
+    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+    <RepositoryUrl>https://github.com/kkaja123/AlternativeUI.git</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageProjectUrl>https://github.com/kkaja123/AlternativeUI</PackageProjectUrl>
+    <Copyright>MIT License</Copyright>
+    <ProduceReferenceAssembly>True</ProduceReferenceAssembly>
+    <GenerateDocumentationFile>False</GenerateDocumentationFile>
     <LangVersion>latest</LangVersion>
     <!-- Disabled warning for publicizer attribute until the NuGet exists for KSP2  -->
     <NoWarn>CS0436</NoWarn>
@@ -56,12 +64,6 @@
       System.Diagnostics.CodeAnalysis.NotNullWhenAttribute;
       System.Diagnostics.CodeAnalysis.DoesNotReturnAttribute;
     </PolySharpIncludeGeneratedTypes>
-    <RootNamespace>AUI</RootNamespace>
-    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
-    <RepositoryUrl>https://github.com/kkaja123/AlternativeUI.git</RepositoryUrl>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageProjectUrl>https://github.com/kkaja123/AlternativeUI</PackageProjectUrl>
-    <Copyright>MIT License</Copyright>
   </PropertyGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="call ..\build_scripts\local_deploy.bat $(Configuration)" />
