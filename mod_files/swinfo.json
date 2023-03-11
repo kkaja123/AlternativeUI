@@ -1,0 +1,13 @@
+{
+  "mod_id": "AUI",
+  "name": "Alternative UI (AUI)",
+  "author": "ArcticNinja73",
+  "description": "A set of alternative UI features for KSP2",
+  "source": "N/A",
+  "version": "0.1.0",
+  "dependencies": [],
+  "ksp2_version": {
+      "min": "0",
+      "max": "*"
+  }
+}
