@@ -29,7 +29,7 @@ The resulting folder structure should look similar the following:
 Kerbal Space Program 2/
 ├── BepInEx/
 │   ├── cache/
-│   ├── _config/
+│   ├── config/
 │   ...
 │   └── plugins/
 │       ├── AUI/

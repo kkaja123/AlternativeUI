@@ -1,7 +1,9 @@
 @echo off
 
-set MOD_NAME=AUI
+@REM !!!! Update this path to your game folder path !!!!
 set KSP_ROOT_FOLDER=T:\SteamGames\steamapps\common\Kerbal Space Program 2
+
+set MOD_NAME=AUI
 set KSP_MOD_FOLDER=%KSP_ROOT_FOLDER%\BepInEx\plugins\%MOD_NAME%
 set build_configuration=Debug
 set \A ret_value = 0
@@ -10,10 +12,10 @@ set \A ret_value = 0
 echo %0 for %MOD_NAME%
 
 :check_args
-if "%1" == "release" (
+if "%1" == "Release" (
   set build_configuration=Release
 ) else (
-  if "%1" == "debug" (
+  if "%1" == "Debug" (
     set build_configuration=Debug
   ) else (
     if "%1" == "" (
@@ -48,7 +50,7 @@ if %ERRORLEVEL% NEQ 0 (
 
 :copy_swinfo
 echo Deploying swinfo.json to %KSP_MOD_FOLDER%
-copy /Y ..\swinfo.json "%KSP_MOD_FOLDER%"
+copy /Y ..\mod_files\swinfo.json "%KSP_MOD_FOLDER%"
 
 :exit_deploy
 echo %0 done

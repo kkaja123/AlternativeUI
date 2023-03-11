@@ -14,6 +14,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="BepInEx.BaseLib" Version="5.4.21" Publicize="true" />
     <PackageReference Include="HarmonyX" Version="2.10.1" />
     <PackageReference Include="BepInEx.PluginInfoProps" Version="2.1.0" PrivateAssets="all" />
@@ -51,8 +58,12 @@
     </PolySharpIncludeGeneratedTypes>
     <RootNamespace>AUI</RootNamespace>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+    <RepositoryUrl>https://github.com/kkaja123/AlternativeUI.git</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageProjectUrl>https://github.com/kkaja123/AlternativeUI</PackageProjectUrl>
+    <Copyright>MIT License</Copyright>
   </PropertyGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="call local_deploy.bat" />
+    <Exec Command="call ..\build_scripts\local_deploy.bat $(Configuration)" />
   </Target>
 </Project>

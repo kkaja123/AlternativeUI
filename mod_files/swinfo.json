@@ -1,9 +1,9 @@
 {
   "mod_id": "AUI",
   "name": "Alternative UI (AUI)",
-  "author": "ArcticNinja73",
+  "author": "kkaja123",
   "description": "A set of alternative UI features for KSP2",
-  "source": "N/A",
+  "source": "https://github.com/kkaja123/AlternativeUI",
   "version": "0.1.0",
   "dependencies": [],
   "ksp2_version": {
