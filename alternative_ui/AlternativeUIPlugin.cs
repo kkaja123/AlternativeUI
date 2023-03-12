@@ -105,18 +105,26 @@ namespace AUI
                 return;
             }
 
-            if (_pendingOABToolbarsUpdate)
+            if (_uiConfigurationsAreInitialized && _pendingPartsPickerExpandUpdate)
             {
-                if (Game.OAB.Current.OABHUD.GetCurrentPartsPicker().expandCollapseToggle.isOn)
+                if (!_partsPickerToggleButtonIsEnabled)
                 {
+                    // Return to default UI config
+                    DefaultPartsPickerUIConfiguration.ApplyUIConfiguration();
+                    DefaultOABToolbarsUIConfiguration.ApplyUIConfiguration();
+                }
+                else if (Game.OAB.Current.OABHUD.GetCurrentPartsPicker().expandCollapseToggle.isOn)
+                {
+                    AlternativePartsPickerUIConfiguration.ApplyUIConfiguration();
                     DefaultOABToolbarsUIConfiguration.ApplyUIConfiguration();
                 }
                 else
                 {
+                    CollapsedPartsPickerUIConfiguration.ApplyUIConfiguration();
                     CollapsedOABToolbarsUIConfiguration.ApplyUIConfiguration();
                 }
 
-                _pendingOABToolbarsUpdate = false;
+                _pendingPartsPickerExpandUpdate = false;
             }
         }
 
@@ -144,55 +152,30 @@ namespace AUI
             OABPartsPicker.expandCollapseToggle.onValueChanged.AddListener(this.OnPartsPickerToggled);
         }
 
-        public void SetActivePartsPickerToggleButton(bool enableToggleButton = true)
+        public void SetActivePartsPickerToggleButton(bool enableToggleButton)
         {
+            _partsPickerToggleButtonIsEnabled = enableToggleButton;
+            if (!_uiConfigurationsAreInitialized)
+            {
+                return;
+            }
+
             if (enableToggleButton == Game.OAB.Current.OABHUD.GetCurrentPartsPicker().expandCollapseToggle.IsActive())
             {
                 // Toggle button already matches the target active state. Nothing to do.
                 return;
             }
 
-            // Force the toggle to be on, since the toggle is being enabled or disabled. (i.e. revert to a known state after a setting change)
-            // This will trigger event handlers for the Toggle, including AUI's.
-            Game.OAB.Current.OABHUD.GetCurrentPartsPicker().expandCollapseToggle.isOn = true;
+            _pendingPartsPickerExpandUpdate = true;
 
             if (enableToggleButton)
             {
                 Logger.LogDebug($"Enabling the OAB Parts Picker Toggle button.");
-
-                // Force AUI config on
-                AlternativePartsPickerUIConfiguration.ApplyUIConfiguration();
-                _partsPickerToggleButtonIsEnabled = true;
             }
             else
             {
                 Logger.LogDebug("Disabling the OAB Parts Picker Toggle button.");
-
-                // Force AUI config off
-                DefaultPartsPickerUIConfiguration.ApplyUIConfiguration();
-                _partsPickerToggleButtonIsEnabled = false;
             }
-        }
-
-        public void SetPartsPickerToggleButtonPosition(float xPos, float yPos, float zPos)
-        {
-            Logger.LogDebug($"Moving the Toggle button to ({xPos}, {yPos}, {zPos})");
-            UnityEngine.Transform PPToggleTransform = Game.OAB.Current.OABHUD.GetCurrentPartsPicker().transform.Find("mask_PartsPicker")?.Find("GRP-ExpandCollapse");
-            PPToggleTransform.position = new Vector3(xPos, yPos, zPos);
-        }
-
-        public void SetPartsPickerToggleButtonScale(float xScale, float yScale)
-        {
-            Logger.LogDebug($"Scaling the Toggle button to ({xScale}, {yScale})");
-            UnityEngine.Transform PPToggleTransform = Game.OAB.Current.OABHUD.GetCurrentPartsPicker().transform.Find("mask_PartsPicker")?.Find("GRP-ExpandCollapse");
-            PPToggleTransform.localScale = new Vector3(xScale, yScale, PPToggleTransform.localScale.z);
-        }
-
-        public void SetPartsPickerToggleButtonScale(float scalingFactor)
-        {
-            Logger.LogDebug($"Scaling the Toggle button to {scalingFactor * 100}% of original size.)");
-            UnityEngine.Transform PPToggleTransform = Game.OAB.Current.OABHUD.GetCurrentPartsPicker().transform.Find("mask_PartsPicker")?.Find("GRP-ExpandCollapse");
-            PPToggleTransform.localScale = new Vector3(scalingFactor, scalingFactor, PPToggleTransform.localScale.z);
         }
 
         private void OnOABLoaded(MessageCenterMessage msg)
@@ -220,11 +203,22 @@ namespace AUI
                     Logger.LogDebug($"AUI.OnVABUIReady: The Base Assembly Editor (BAE) variant has been loaded");
                 }
 
+                // Move the orientation (ortho view) cube to the toolbar widget and position it relative to the toggle orientation button
+                OABPartsPicker.viewCubeRT.SetParent(OABHUD.toolbar.transform);
+                RectTransform orientationToggleTransform = OABHUD.toolbar.transform.Find("GRP-Toggle Orientation") as RectTransform;
+                OABPartsPicker.viewCubeRT.anchorMin = orientationToggleTransform.anchorMin;
+                OABPartsPicker.viewCubeRT.anchorMax = orientationToggleTransform.anchorMax;
+                OABPartsPicker.viewCubeRT.pivot = orientationToggleTransform.pivot;
+                OABPartsPicker.viewCubeRT.anchoredPosition = new Vector2(orientationToggleTransform.anchoredPosition.x - 95, 36);
+
                 if (!_uiConfigurationsAreInitialized)
                 {
                     // Initialize the configurations to the standard UI layout.
                     DefaultPartsPickerUIConfiguration.RefreshConfigurationFromUI();
+                    SetUpDefaultPartsPickerUIConfig();
+
                     DefaultOABToolbarsUIConfiguration.RefreshConfigurationFromUI();
+                    SetUpDefaultOABToolbarsUIConfig();
 
                     AlternativePartsPickerUIConfiguration.RefreshConfigurationFromUI();
                     SetUpAltPartsPickerUIConfig();
@@ -262,50 +256,115 @@ namespace AUI
             // TODO: Fix auto-adjustments of toolbars.
             Logger.LogDebug($"AUI.OnPartsPickerToggled: isExpanded = {isExpanded}");
 
-            _pendingOABToolbarsUpdate = true;  // OAB toolbars have to be updated later, since the AssemblyPartsPicker tries to automatically adjust them, but fails.
-            if (isExpanded)
-            {
-                AlternativePartsPickerUIConfiguration.ApplyUIConfiguration();
-            }
-            else
-            {
-                CollapsedPartsPickerUIConfiguration.ApplyUIConfiguration();
-            }
+            _pendingPartsPickerExpandUpdate = true;  // The OAB HUD elements have to be updated later, since the AssemblyPartsPicker tries to automatically adjust them.
+        }
+
+        private void SetUpDefaultPartsPickerUIConfig()
+        {
+            // Fix the root to better behave with widget_PartsPicker
+            DefaultPartsPickerUIConfiguration.RootWidget.anchorMin = new Vector2(0, 0);
+            DefaultPartsPickerUIConfiguration.RootWidget.anchorMax = new Vector2(1, 1);
+            DefaultPartsPickerUIConfiguration.RootWidget.anchoredPosition = new Vector2(0, 10);  // Position moves up because widget_PartsPicker seems to have a bad offset value.
+            DefaultPartsPickerUIConfiguration.RootWidget.sizeDelta = new Vector2(0, 0);
+            DefaultPartsPickerUIConfiguration.RootWidget.pivot = new Vector2(0, 1);
+
+            DefaultPartsPickerUIConfiguration.ApplyUIConfiguration();  // Since this is supposed to be the default, apply these changes right away.
         }
 
         private void SetUpAltPartsPickerUIConfig()
         {
             // Set up the normally-hidden parts picker toggle button.
             AlternativePartsPickerUIConfiguration.ExpandToggleTransform.localScale = _defaultPartsPickerToggleScale;
-            AlternativePartsPickerUIConfiguration.ExpandToggleTransform.position = _defaultPartsPickerTogglePosition;
+            AlternativePartsPickerUIConfiguration.ExpandToggleTransform.anchoredPosition = new Vector2(22, -18);
+            AlternativePartsPickerUIConfiguration.ExpandToggleTransform.sizeDelta = new Vector2(48, 48);
             AlternativePartsPickerUIConfiguration.ExpandToggleTransform.gameObject.SetActive(true);
 
             // Set up the header to make room for the addition of the toggle button.
-            AlternativePartsPickerUIConfiguration.HeaderTransform.sizeDelta = new Vector2(-40, 25);  // Adds room for the toggle button in top-left of parts picker window.
-            AlternativePartsPickerUIConfiguration.HeaderTransform.position = new Vector3(-663, 471);  // Right-aligns the header.
+            AlternativePartsPickerUIConfiguration.HeaderTransform.sizeDelta = new Vector2(-40, 30);  // Adds room for the toggle button in top-left of parts picker window.
+            AlternativePartsPickerUIConfiguration.HeaderTransform.pivot = new Vector2(1, 1);  // Right-aligns the header.
+            AlternativePartsPickerUIConfiguration.HeaderTransform.anchoredPosition = new Vector2(0, -2);  // Provides some margin on the top edge.
         }
 
         private void SetUpCollapsedPartsPickerUIConfig()
         {
-            CollapsedPartsPickerUIConfiguration.ExpandToggleTransform.localScale = _defaultPartsPickerToggleScale;
-            CollapsedPartsPickerUIConfiguration.ExpandToggleTransform.position = _defaultPartsPickerTogglePosition;
+            CollapsedPartsPickerUIConfiguration.ExpandToggleTransform.localScale = AlternativePartsPickerUIConfiguration.ExpandToggleTransform.localScale;
+            CollapsedPartsPickerUIConfiguration.ExpandToggleTransform.anchoredPosition = AlternativePartsPickerUIConfiguration.ExpandToggleTransform.anchoredPosition;
+            CollapsedPartsPickerUIConfiguration.ExpandToggleTransform.sizeDelta = AlternativePartsPickerUIConfiguration.ExpandToggleTransform.sizeDelta;
             CollapsedPartsPickerUIConfiguration.ExpandToggleTransform.gameObject.SetActive(true);
 
+            float panelWidth = 40f;
+
+            // Shrink the parts picker width-wise
+            CollapsedPartsPickerUIConfiguration.RootWidget.anchorMin = new Vector2(0, 1);  // Top-left corner
+            CollapsedPartsPickerUIConfiguration.RootWidget.anchorMax = new Vector2(0, 1);  // Top-left corner
+            CollapsedPartsPickerUIConfiguration.RootWidget.sizeDelta = new Vector2(panelWidth, 570);  // TODO: base the vertical size off of the preferred min height of the categories vertical layer group + room for the toggle button
+            CollapsedPartsPickerUIConfiguration.RootWidget.pivot = new Vector2(0, 1);  // Top-left corner
+            CollapsedPartsPickerUIConfiguration.RootWidget.anchoredPosition = new Vector2(0, 0);  // Puts it a little bit above the parent widget, which matches the height
+            RectTransform originalRoot = AlternativePartsPickerUIConfiguration.RootWidget;
+            float distanceToMatchOriginalTop = (1 - originalRoot.pivot.y) * originalRoot.rect.height + originalRoot.anchoredPosition.y;  // Derive the anchor vertical offset needed to match the same header position as the original
+            Logger.LogDebug($"SetUpCollapsedPartsPickerUIConfig(): Calculated dY as {distanceToMatchOriginalTop}");
+            CollapsedPartsPickerUIConfiguration.RootWidget.anchoredPosition = new Vector2(0, distanceToMatchOriginalTop);  // Puts it a little bit above the parent widget, which matches the height
+
             // Moves the body to be snug with the BG panel and the toggle button and collapsed in size without obscuring the category buttons.
-            CollapsedPartsPickerUIConfiguration.BodyTransform.position = new Vector3(-895.0518f, 185.8370f, -4900.0f);
-            CollapsedPartsPickerUIConfiguration.BodyTransform.sizeDelta = new Vector2(-415, -492);
-            CollapsedPartsPickerUIConfiguration.BodyTransform.pivot = new Vector2(0, .5f);
+            CollapsedPartsPickerUIConfiguration.BodyTransform.pivot = new Vector2(0.5f, 1f);  // Place pivot top-center
+            CollapsedPartsPickerUIConfiguration.BodyTransform.anchoredPosition = new Vector2(0, -38);  // Move body down to make room for the toggle button
+            CollapsedPartsPickerUIConfiguration.BodyTransform.sizeDelta = new Vector2(0, -38);  // Trim off the bottom that got pushed off from the anchor offset
+
+            // Resize background panel to 100% of root
+            CollapsedPartsPickerUIConfiguration.BackgroundPanelTransform.anchorMin = new Vector2(0, 0);
+            CollapsedPartsPickerUIConfiguration.BackgroundPanelTransform.anchorMax = new Vector2(1, 1);
+            CollapsedPartsPickerUIConfiguration.BackgroundPanelTransform.anchoredPosition = new Vector2(0, 0);
+            CollapsedPartsPickerUIConfiguration.BackgroundPanelTransform.sizeDelta = new Vector2(0, 0);
 
             CollapsedPartsPickerUIConfiguration.HeaderTransform.gameObject.SetActive(false);
+            CollapsedPartsPickerUIConfiguration.SearchFilterSortTransform.gameObject.SetActive(false);
             CollapsedPartsPickerUIConfiguration.TrashBinHitAreaTransform.gameObject.SetActive(false);
+            CollapsedPartsPickerUIConfiguration.TrashBinTransform.gameObject.SetActive(false);
+        }
 
-            CollapsedPartsPickerUIConfiguration.BackgroundPanelTransform.sizeDelta = new Vector2(40, 570);
+        private void SetUpDefaultOABToolbarsUIConfig()
+        {
+            // By setting up a right-aligned toolbar UI area, the collapse logic just needs to adjust size delta to get everything re-positioned.
+            DefaultOABToolbarsUIConfiguration.RootWidget.anchorMin = new Vector2(1, 0);
+            DefaultOABToolbarsUIConfiguration.RootWidget.anchorMax = new Vector2(1, 1);
+            DefaultOABToolbarsUIConfiguration.RootWidget.anchoredPosition = new Vector2(-455, -15);  // Large x offset is for all of the buttons on the right and the "staging" UI elements
+            DefaultOABToolbarsUIConfiguration.RootWidget.pivot = new Vector2(1f, 0.5f);
+
+            // Calculate distance between the root's pivot anchor and the right side of the parts picker.
+            // We'll have to apply the default configurations right now so we can calculate the distance from live objects.
+            DefaultPartsPickerUIConfiguration.ApplyUIConfiguration();
+            DefaultOABToolbarsUIConfiguration.ApplyUIConfiguration();
+            if (OABPartsPicker == null)
+            {
+                OABPartsPicker = Game.OAB.Current.OABHUD.GetCurrentPartsPicker();
+            }
+
+            RectTransform ppRoot = OABPartsPicker.transform as RectTransform;
+            RectTransform myRoot = Game.OAB.Current.OABHUD.toolbar.transform as RectTransform;
+            float margin = 16f;
+            Logger.LogDebug($"SetUpDefaultOABToolbarsUIConfig(): myRoot.localPosition.x as {myRoot.localPosition.x}");
+            Logger.LogDebug($"SetUpDefaultOABToolbarsUIConfig(): ppRoot.localPosition.x as {ppRoot.localPosition.x}");
+            Logger.LogDebug($"SetUpDefaultOABToolbarsUIConfig(): ppRoot.rect.xMax as {ppRoot.rect.xMax}");
+            float deltaX = myRoot.localPosition.x - (ppRoot.localPosition.x + ppRoot.rect.xMax + margin);  // Uses local position, since absolute position is subject to scaling from the HUD canvas. rect is in local unit scale, so it's technically accurate too. You just have to hope that both roots have the same parent.
+            Logger.LogDebug($"SetUpDefaultOABToolbarsUIConfig(): Calculated dX as {deltaX}");
+            DefaultOABToolbarsUIConfiguration.RootWidget.sizeDelta = new Vector2(deltaX, -62);  // X size gets the left side of the widget near to the right side of parts picker. Y size gives some margin to top and bottom of view area.
+
+            DefaultOABToolbarsUIConfiguration.UndoRedoTransform.anchorMin = new Vector2(0, 1);
+            DefaultOABToolbarsUIConfiguration.UndoRedoTransform.anchorMax = new Vector2(0, 1);
+            DefaultOABToolbarsUIConfiguration.UndoRedoTransform.anchoredPosition = new Vector2(0, 0);
+            DefaultOABToolbarsUIConfiguration.UndoRedoTransform.pivot = new Vector2(0, 1);
+            DefaultOABToolbarsUIConfiguration.ApplyUIConfiguration();  // Since this is supposed to be the default, apply these changes right away.
         }
 
         private void SetUpCollapsedOABToolbarsUIConfig()
         {
-            CollapsedOABToolbarsUIConfiguration.RootWidget.position = DefaultOABToolbarsUIConfiguration.RootWidget.position with {x =
-                DefaultOABToolbarsUIConfiguration.RootWidget.position.x - AlternativePartsPickerUIConfiguration.RootWidget.rect.width / 2};
+            // Calculate distance between the root's pivot anchor and the right side of the parts picker.
+            RectTransform ppRoot = OABPartsPicker.transform as RectTransform;
+            RectTransform myRoot = Game.OAB.Current.OABHUD.toolbar.transform as RectTransform;
+            float margin = 16f;
+            float deltaX = myRoot.localPosition.x - (ppRoot.localPosition.x + CollapsedPartsPickerUIConfiguration.RootWidget.rect.xMax + margin);
+            Logger.LogDebug($"SetUpDefaultOABToolbarsUIConfig(): Calculated dX as {deltaX}");
+            CollapsedOABToolbarsUIConfiguration.RootWidget.sizeDelta = new Vector2(deltaX, -50);  // X size gets the left side of the widget near to the right side of parts picker. Y size gives some margin to top and bottom of view area.
         }
 
         protected bool _uiConfigurationsAreInitialized = false;
@@ -316,9 +375,9 @@ namespace AUI
         private PartsPickerUIConfiguration _collapsedPartsPickerUIConfiguration;
         private Vector3 _defaultPartsPickerTogglePosition = new Vector3(-893, 439, 0);  // Move up to the header row.
         private Vector3 _defaultPartsPickerToggleScale = new Vector3(0.8f, 0.8f, 1.0f);  // Fits nicer next to the header when smaller than default.
+        private bool _pendingPartsPickerExpandUpdate = false;
 
         private OABToolbarsUIConfiguration _defaultOABToolbarsUIConfiguration;
         private OABToolbarsUIConfiguration _collapsedOABToolbarsUIConfiguration;
-        private bool _pendingOABToolbarsUpdate = false;
     }
 }

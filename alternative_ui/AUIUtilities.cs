@@ -35,20 +35,21 @@ namespace AUI
 
             dest.anchorMin = source.anchorMin;
             dest.anchorMax = source.anchorMax;
+            dest.anchoredPosition3D = source.anchoredPosition3D;
             dest.pivot = source.pivot;
             dest.sizeDelta = source.sizeDelta;
             dest.localScale = source.localScale;
 
-            if (useLocal)
-            {
-                dest.localPosition = source.localPosition;
-                dest.localRotation = source.localRotation;
-            }
-            else
-            {
-                dest.position = source.position;
-                dest.rotation = source.rotation;
-            }
+            // if (useLocal)
+            // {
+            //     dest.localPosition = source.localPosition;
+            //     dest.localRotation = source.localRotation;
+            // }
+            // else
+            // {
+            //     dest.position = source.position;
+            //     dest.rotation = source.rotation;
+            // }
 
             if (dest.gameObject != null && source.gameObject != null)
             {
