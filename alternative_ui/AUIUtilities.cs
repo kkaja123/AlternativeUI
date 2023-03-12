@@ -25,7 +25,7 @@ namespace AUI
         /// <summary>
         /// Sets a RectTransform to the same layout as another.
         /// </summary>
-        static public void CopyRectTransformProperties(RectTransform dest, RectTransform source, bool useLocal = false)
+        static public void CopyRectTransformProperties(RectTransform dest, RectTransform source)
         {
             if (dest == null || source == null)
             {
@@ -39,17 +39,6 @@ namespace AUI
             dest.pivot = source.pivot;
             dest.sizeDelta = source.sizeDelta;
             dest.localScale = source.localScale;
-
-            // if (useLocal)
-            // {
-            //     dest.localPosition = source.localPosition;
-            //     dest.localRotation = source.localRotation;
-            // }
-            // else
-            // {
-            //     dest.position = source.position;
-            //     dest.rotation = source.rotation;
-            // }
 
             if (dest.gameObject != null && source.gameObject != null)
             {

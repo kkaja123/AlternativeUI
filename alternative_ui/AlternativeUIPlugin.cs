@@ -342,12 +342,12 @@ namespace AUI
             RectTransform ppRoot = OABPartsPicker.transform as RectTransform;
             RectTransform myRoot = Game.OAB.Current.OABHUD.toolbar.transform as RectTransform;
             float margin = 16f;
-            Logger.LogDebug($"SetUpDefaultOABToolbarsUIConfig(): myRoot.localPosition.x as {myRoot.localPosition.x}");
-            Logger.LogDebug($"SetUpDefaultOABToolbarsUIConfig(): ppRoot.localPosition.x as {ppRoot.localPosition.x}");
-            Logger.LogDebug($"SetUpDefaultOABToolbarsUIConfig(): ppRoot.rect.xMax as {ppRoot.rect.xMax}");
             float deltaX = myRoot.localPosition.x - (ppRoot.localPosition.x + ppRoot.rect.xMax + margin);  // Uses local position, since absolute position is subject to scaling from the HUD canvas. rect is in local unit scale, so it's technically accurate too. You just have to hope that both roots have the same parent.
-            Logger.LogDebug($"SetUpDefaultOABToolbarsUIConfig(): Calculated dX as {deltaX}");
-            DefaultOABToolbarsUIConfiguration.RootWidget.sizeDelta = new Vector2(deltaX, -62);  // X size gets the left side of the widget near to the right side of parts picker. Y size gives some margin to top and bottom of view area.
+            // The borders of the UI elements need to be pixel perfect to prevent artifacts. That means deltaX needs to be a integer multiple of two.
+            int pixelDeltaX = (int)deltaX;
+            pixelDeltaX = pixelDeltaX / 2;  // Get the multiple of two by using integer division to truncate any remaining decimal part.
+            pixelDeltaX = pixelDeltaX * 2;  // Return to base value
+            DefaultOABToolbarsUIConfiguration.RootWidget.sizeDelta = new Vector2(pixelDeltaX, -62);  // X size gets the left side of the widget near to the right side of parts picker. Y size gives some margin to top and bottom of view area.
 
             DefaultOABToolbarsUIConfiguration.UndoRedoTransform.anchorMin = new Vector2(0, 1);
             DefaultOABToolbarsUIConfiguration.UndoRedoTransform.anchorMax = new Vector2(0, 1);
@@ -363,8 +363,11 @@ namespace AUI
             RectTransform myRoot = Game.OAB.Current.OABHUD.toolbar.transform as RectTransform;
             float margin = 16f;
             float deltaX = myRoot.localPosition.x - (ppRoot.localPosition.x + CollapsedPartsPickerUIConfiguration.RootWidget.rect.xMax + margin);
-            Logger.LogDebug($"SetUpDefaultOABToolbarsUIConfig(): Calculated dX as {deltaX}");
-            CollapsedOABToolbarsUIConfiguration.RootWidget.sizeDelta = new Vector2(deltaX, -50);  // X size gets the left side of the widget near to the right side of parts picker. Y size gives some margin to top and bottom of view area.
+            // The borders of the UI elements need to be pixel perfect to prevent artifacts. That means deltaX needs to be a integer multiple of two.
+            int pixelDeltaX = (int)deltaX;
+            pixelDeltaX = pixelDeltaX / 2;  // Get the multiple of two by using integer division to truncate any remaining decimal part.
+            pixelDeltaX = pixelDeltaX * 2;  // Return to base value
+            CollapsedOABToolbarsUIConfiguration.RootWidget.sizeDelta = DefaultOABToolbarsUIConfiguration.RootWidget.sizeDelta with { x = pixelDeltaX };  // X size gets the left side of the widget near to the right side of parts picker.
         }
 
         protected bool _uiConfigurationsAreInitialized = false;

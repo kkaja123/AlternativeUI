@@ -124,13 +124,13 @@ namespace AUI
             RectTransform gameTrashBinHitAreaTransform = UIRoot.Find("TrashBin-HitArea") as RectTransform;
 
             Utilities.CopyRectTransformProperties(gameRootWidget, RootWidget);
-            Utilities.CopyRectTransformProperties(gameExpandToggleTransform, ExpandToggleTransform, true);
-            Utilities.CopyRectTransformProperties(gameHeaderTransform, HeaderTransform, true);
-            Utilities.CopyRectTransformProperties(gameSearchFilterSortTransform, SearchFilterSortTransform, true);
-            Utilities.CopyRectTransformProperties(gameBodyTransform, BodyTransform, true);
-            Utilities.CopyRectTransformProperties(gameBackgroundPanelTransform, BackgroundPanelTransform, true);
-            Utilities.CopyRectTransformProperties(gameTrashBinTransform, TrashBinTransform, true);
-            Utilities.CopyRectTransformProperties(gameTrashBinHitAreaTransform, TrashBinHitAreaTransform, true);
+            Utilities.CopyRectTransformProperties(gameExpandToggleTransform, ExpandToggleTransform);
+            Utilities.CopyRectTransformProperties(gameHeaderTransform, HeaderTransform);
+            Utilities.CopyRectTransformProperties(gameSearchFilterSortTransform, SearchFilterSortTransform);
+            Utilities.CopyRectTransformProperties(gameBodyTransform, BodyTransform);
+            Utilities.CopyRectTransformProperties(gameBackgroundPanelTransform, BackgroundPanelTransform);
+            Utilities.CopyRectTransformProperties(gameTrashBinTransform, TrashBinTransform);
+            Utilities.CopyRectTransformProperties(gameTrashBinHitAreaTransform, TrashBinHitAreaTransform);
 
             return true;
         }
@@ -164,13 +164,13 @@ namespace AUI
             RectTransform gameTrashBinHitAreaTransform = UIRoot.Find("TrashBin-HitArea") as RectTransform;
 
             Utilities.CopyRectTransformProperties(RootWidget, gameRootWidget);
-            Utilities.CopyRectTransformProperties(ExpandToggleTransform, gameExpandToggleTransform, true);
-            Utilities.CopyRectTransformProperties(HeaderTransform, gameHeaderTransform, true);
-            Utilities.CopyRectTransformProperties(SearchFilterSortTransform, gameSearchFilterSortTransform, true);
-            Utilities.CopyRectTransformProperties(BodyTransform, gameBodyTransform, true);
-            Utilities.CopyRectTransformProperties(BackgroundPanelTransform, gameBackgroundPanelTransform, true);
-            Utilities.CopyRectTransformProperties(TrashBinTransform, gameTrashBinTransform, true);
-            Utilities.CopyRectTransformProperties(TrashBinHitAreaTransform, gameTrashBinHitAreaTransform, true);
+            Utilities.CopyRectTransformProperties(ExpandToggleTransform, gameExpandToggleTransform);
+            Utilities.CopyRectTransformProperties(HeaderTransform, gameHeaderTransform);
+            Utilities.CopyRectTransformProperties(SearchFilterSortTransform, gameSearchFilterSortTransform);
+            Utilities.CopyRectTransformProperties(BodyTransform, gameBodyTransform);
+            Utilities.CopyRectTransformProperties(BackgroundPanelTransform, gameBackgroundPanelTransform);
+            Utilities.CopyRectTransformProperties(TrashBinTransform, gameTrashBinTransform);
+            Utilities.CopyRectTransformProperties(TrashBinHitAreaTransform, gameTrashBinHitAreaTransform);
 
             return true;
         }
@@ -235,13 +235,18 @@ namespace AUI
             RectTransform gameInfoOverlaysTransform = UIRoot.Find("GRP-Info-Overlays") as RectTransform;
             RectTransform gameSymmetrySnapTransform = UIRoot.Find("GRP-Symmetry-Snap") as RectTransform;
             RectTransform gameToolsTransform = UIRoot.Find("GRP-Tools") as RectTransform;
+            RectTransform gameOrientationCubeTransform = UIRoot.Find("orientation_Cube") as RectTransform;
 
             Utilities.CopyRectTransformProperties(gameRootWidget, RootWidget);
-            Utilities.CopyRectTransformProperties(gameUndoRedoTransformTransform, UndoRedoTransform, true);
-            Utilities.CopyRectTransformProperties(gameToggleOrientationTransform, ToggleOrientationTransform, true);
-            Utilities.CopyRectTransformProperties(gameInfoOverlaysTransform, InfoOverlaysTransform, true);
-            Utilities.CopyRectTransformProperties(gameSymmetrySnapTransform, SymmetrySnapTransform, true);
-            Utilities.CopyRectTransformProperties(gameToolsTransform, ToolsTransform, true);
+            Utilities.CopyRectTransformProperties(gameUndoRedoTransformTransform, UndoRedoTransform);
+            Utilities.CopyRectTransformProperties(gameToggleOrientationTransform, ToggleOrientationTransform);
+            Utilities.CopyRectTransformProperties(gameInfoOverlaysTransform, InfoOverlaysTransform);
+            Utilities.CopyRectTransformProperties(gameSymmetrySnapTransform, SymmetrySnapTransform);
+            Utilities.CopyRectTransformProperties(gameToolsTransform, ToolsTransform);
+            if (gameOrientationCubeTransform != null)  // This class expects the orientation cube to have been moved to the toolbars group
+            {
+                Utilities.CopyRectTransformProperties(gameOrientationCubeTransform, OrientationCubeTransform);
+            }
 
             return true;
         }
@@ -271,13 +276,18 @@ namespace AUI
             RectTransform gameInfoOverlaysTransform = UIRoot.Find("GRP-Info-Overlays") as RectTransform;
             RectTransform gameSymmetrySnapTransform = UIRoot.Find("GRP-Symmetry-Snap") as RectTransform;
             RectTransform gameToolsTransform = UIRoot.Find("GRP-Tools") as RectTransform;
+            RectTransform gameOrientationCubeTransform = UIRoot.Find("orientation_Cube") as RectTransform;
 
             Utilities.CopyRectTransformProperties(RootWidget, gameRootWidget);
-            Utilities.CopyRectTransformProperties(UndoRedoTransform, gameUndoRedoTransformTransform, true);
-            Utilities.CopyRectTransformProperties(ToggleOrientationTransform, gameToggleOrientationTransform, true);
-            Utilities.CopyRectTransformProperties(InfoOverlaysTransform, gameInfoOverlaysTransform, true);
-            Utilities.CopyRectTransformProperties(SymmetrySnapTransform, gameSymmetrySnapTransform, true);
-            Utilities.CopyRectTransformProperties(ToolsTransform, gameToolsTransform, true);
+            Utilities.CopyRectTransformProperties(UndoRedoTransform, gameUndoRedoTransformTransform);
+            Utilities.CopyRectTransformProperties(ToggleOrientationTransform, gameToggleOrientationTransform);
+            Utilities.CopyRectTransformProperties(InfoOverlaysTransform, gameInfoOverlaysTransform);
+            Utilities.CopyRectTransformProperties(SymmetrySnapTransform, gameSymmetrySnapTransform);
+            Utilities.CopyRectTransformProperties(ToolsTransform, gameToolsTransform);
+            if (gameOrientationCubeTransform != null)  // This class expects the orientation cube to have been moved to the toolbars group
+            {
+                Utilities.CopyRectTransformProperties(OrientationCubeTransform, gameOrientationCubeTransform);
+            }
 
             return true;
         }
