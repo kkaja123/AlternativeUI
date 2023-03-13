@@ -9,6 +9,13 @@ The primary goal of this mod isn't to completely replace the stock UI of KSP 2, 
 ## Current Features
 * Add a toggle button that expands and collapses the OAB's Parts Picker Drawer.
 
+    <details><summary>See example images</summary>
+
+    ![Parts Picker Collapse Button](docs/resources/OAB%20PartsPicker%20Collapse%20Toggle%20Button.png)
+
+    ![Parts Picker Collapsed View](docs/resources/OAB%20PartsPicker%20Collapsed.png)
+    </details>
+
 ## Installing AUI
 ### Prerequisites
 * **BepInEx** and **SpaceWarp**
