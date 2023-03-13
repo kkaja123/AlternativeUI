@@ -14,6 +14,8 @@ from build_tools.metadata_reader import (
     get_metadata_dict,
     make_version_info,
 )
+import build_tools.swinfo_updater as swinfo_updater
+import build_tools.csproj_updater as csproj_updater
 
 
 PROJECT_TITLE = "alternative_ui"  # This build script assumes that the project title is used for the folder name containing a .csproj file with a matching file name.
@@ -28,6 +30,15 @@ ARCHIVE_PATH_PREFIX = pathlib.Path("BepInEx") / "plugins" / PROJECT_SHORT_NAME
 BUILD_OUTPUT_DIR = PROJECT_ROOT_DIR / "build"
 
 init_logger(logging.INFO)
+
+
+def update_version_number_uses():
+    swinfo_updater.update_version_string(
+        MOD_FILES_DIR / "swinfo.json", PROJECT_VERSION_INFO
+    )
+    csproj_updater.update_version_string(
+        AUI_VS_PROJECT_DIR / f"{PROJECT_TITLE}.csproj", PROJECT_VERSION_INFO
+    )
 
 
 def run_dotnet(configuration: str):
@@ -95,6 +106,9 @@ def package(configuration: str):
 
 def build(parameters: BuildParameters) -> int:
     log.info(f"Project version number: {PROJECT_VERSION_INFO}")
+
+    log.debug("Propagating version number everywhere")
+    update_version_number_uses()
 
     if not hasattr(parameters, "configurations"):
         log.error(f"Invalid build parameters object passed to build(): {parameters}")

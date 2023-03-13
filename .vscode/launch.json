@@ -1,0 +1,16 @@
+{
+  "configurations": [
+    {
+      "name": "Python: build",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/build_scripts/build_release.py",
+      "console": "integratedTerminal",
+      "args": [
+        "-c",
+        "release"
+      ],
+      "justMyCode": true
+    }
+  ]
+}

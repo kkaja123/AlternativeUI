@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
@@ -17,7 +17,7 @@
     <ProduceReferenceAssembly>True</ProduceReferenceAssembly>
     <GenerateDocumentationFile>False</GenerateDocumentationFile>
     <LangVersion>latest</LangVersion>
-    <!-- Disabled warning for publicizer attribute until the NuGet exists for KSP2  -->
+    
     <NoWarn>CS0436</NoWarn>
   </PropertyGroup>
 
