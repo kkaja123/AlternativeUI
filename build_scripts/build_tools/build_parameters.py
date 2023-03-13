@@ -21,6 +21,7 @@ def parse_args():
         "--deploy_locally",
         "-d",
         help="If this flag is present, the generated package will be deployed to your KSP 2 game folder (see local_deploy.bat; requires setup). This option is incompatible with the options --configuration=all",
+        action="store_true",
     )
 
     return parser.parse_args()

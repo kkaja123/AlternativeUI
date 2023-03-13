@@ -117,6 +117,11 @@ def build(parameters: BuildParameters) -> int:
     log.info(f"Configurations to build: {parameters.configurations}")
 
     build_has_failures = False
+    if parameters.deploy_package_locally:
+        log.warning(
+            "The local deployment option is not yet implemented."
+            " Incidentally, it will always try to do a local deployment at the moment."
+        )
 
     for build_config in parameters.configurations:
         log.info(f"Building '{PROJECT_TITLE}' in the '{build_config}' configuration")

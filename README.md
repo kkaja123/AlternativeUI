@@ -60,14 +60,28 @@ Epic Game Store (EGS):
 2. Right-click -> "Manage" -> "Installation" -> Click on the button with the folder 📁 icon.
 
 ## Building the Project
-Before building the project, if you want to have Visual Studio automatically export the built assembly and `swinfo.json` to your KSP game folder, edit `build_scripts/local_deploy.bat` to have the destination path be in your game folder's path.
+Before building the project, if you want to have Visual Studio automatically export the built assembly and `mod_files/swinfo.json` to your KSP game folder, edit `build_scripts/local_deploy.bat` to have the destination path be in your game folder's path.
 
+### Initial setup
 1. Use the C# project file located at `alternative_ui/alternative_ui.csproj`.
 2. Update any failed references in the project. (Point them at the assemblies in the KSP 2 game folder for convenience.)
 3. Build the project.
      * Visual Studio 2022
      * .NET Framework 4.7.2
-4. The default output location is `alternative_ui/bin/<build config>/AUI.dll`.
+4. The default output location is `alternative_ui/bin/<build_config>/AUI.dll`.
+
+### Iterative development builds
+In `build_scripts` there are some scripts to help with managing the build process. Namely, `build.py` can do a lot of the grunt work.
+
+To set up,
+1. Open up a command prompt in `build_scripts`
+2. *Optionally, create a python virtual environment and activate it* `python -m venv venv && venv/Scripts/activate.bat`
+3. Install the required python packages `pip install -r PipRequirements.txt`
+4. All done! Test the build by running `build.py`. See `build.py --help` for usage info.
+
+Look in the `build` dir for a compressed archive of the built files, or `alternative_ui/bin/<build_config>/` for the .dll file.
+
+Note that the default behavior of the build is to attempt to perform a local deployment of the mod .dll to your game folder, using `build_scripts/local_deploy.bat`. Edit that batch file if you need to update the path to your game folder (which is very likely!). In the future, I intend on adding an option to turn that off, but there isn't one in the initial release of the mod.
 
 ## Contributing to the Project
 *TODO: Create a CONTRIBUTING.md guide.*

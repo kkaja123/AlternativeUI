@@ -59,12 +59,5 @@ class BuildLogFormatter(logging.Formatter):
 def init_logger(logging_level: int = logging.WARNING):
     handler = logging.StreamHandler()
     handler.setFormatter(BuildLogFormatter())
-    log.setLevel(logging.DEBUG)
+    log.setLevel(logging_level)
     log.addHandler(handler)
-
-
-# log.debug("debug test")
-# log.info("info test")
-# log.warning("warning test")
-# log.error("error test")
-# log.critical("critical test")
