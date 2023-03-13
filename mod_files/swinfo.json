@@ -7,7 +7,7 @@
   "version": "0.1.0",
   "dependencies": [],
   "ksp2_version": {
-      "min": "0",
-      "max": "*"
+    "min": "0",
+    "max": "*"
   }
 }
