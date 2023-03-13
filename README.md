@@ -2,7 +2,7 @@
 ## An Alternative UI mod for KSP 2
 This mod for KSP 2 provides a set of alternative UI features and layouts compared to the stock UI.
 
-This may include replacing UI assets, repositioning UI elements, adding UI assets that may enhance the existing UI, bugfixes, and custom UI layouts.
+This may include replacing UI assets, repositioning UI elements, adding UI assets that may enhance the existing UI, bugfixes, and user-made custom UI layouts.
 
 The primary goal of this mod isn't to completely replace the stock UI of KSP 2, but to extend what is already there. Another goal is to provide flexibility to the player for configuring the UI to their liking. Initial customizations for this mod will be little things here and there, but the plan is to go as far as providing a lite, in-game, UI layout editor so the user can adjust UI elements to their liking and save the layout as a custom UI configuration.
 
