@@ -47,8 +47,23 @@ def run_dotnet(configuration: str):
         # Use root dir as a backup and hopefully dotnet can find our project
         project_file_path = PROJECT_ROOT_DIR
 
-    dotnet_command = ["dotnet", "build", str(project_file_path)]
-    result = subprocess.run(dotnet_command)
+    dotnet_clean_command = [
+        "dotnet",
+        "clean",
+        str(project_file_path),
+        "--configuration",
+        configuration,
+    ]
+    result = subprocess.run(dotnet_clean_command)
+
+    dotnet_build_command = [
+        "dotnet",
+        "build",
+        str(project_file_path),
+        "--configuration",
+        configuration,
+    ]
+    result = subprocess.run(dotnet_build_command)
 
     if result.returncode != 0:
         log.error("dotnet execution failed")

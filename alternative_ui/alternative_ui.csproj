@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <AssemblyName>AUI</AssemblyName>
-    <Description>Alternative UI for KSP 2</Description>
+    <Description>AlternativeUI for KSP 2</Description>
     <Version>0.1.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
@@ -17,7 +17,7 @@
     <ProduceReferenceAssembly>True</ProduceReferenceAssembly>
     <GenerateDocumentationFile>False</GenerateDocumentationFile>
     <LangVersion>latest</LangVersion>
-    
+
     <NoWarn>CS0436</NoWarn>
   </PropertyGroup>
 
