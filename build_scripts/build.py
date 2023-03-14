@@ -105,14 +105,16 @@ def package(configuration: str):
         log.info(f"Creating {package_file_name}")
         package_zip.write(
             AUI_VS_PROJECT_DIR / "bin" / configuration / f"{PROJECT_SHORT_NAME}.dll",
-            arcname=ARCHIVE_PATH_PREFIX
-            / f"{PROJECT_SHORT_NAME}.dll",  # Put it at the archive's root
+            arcname=ARCHIVE_PATH_PREFIX / f"{PROJECT_SHORT_NAME}.dll",
         )
         for file_index in range(len(mod_files)):
             package_zip.write(
                 mod_files[file_index],
                 arcname=ARCHIVE_PATH_PREFIX / mod_files_relative_names[file_index],
             )
+        package_zip.write(
+            PROJECT_ROOT_DIR / "LICENSE", arcname=ARCHIVE_PATH_PREFIX / "LICENSE"
+        )
         log.info(f"Generated the zip archive with the following contents:")
         package_zip.printdir()
 

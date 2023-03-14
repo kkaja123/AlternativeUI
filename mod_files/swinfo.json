@@ -4,7 +4,7 @@
   "author": "kkaja123",
   "description": "A set of alternative UI features for KSP2",
   "source": "https://github.com/kkaja123/AlternativeUI",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "dependencies": [],
   "ksp2_version": {
     "min": "0",
