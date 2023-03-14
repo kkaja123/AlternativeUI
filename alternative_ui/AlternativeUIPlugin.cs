@@ -1,5 +1,6 @@
 ﻿using System;
 using BepInEx;
+using BepInEx.Configuration;
 using KSP.Messages;
 using SpaceWarp;
 using SpaceWarp.API.Mods;
@@ -7,10 +8,11 @@ using UnityEngine;
 
 namespace AUI
 {
-    [BepInPlugin("com.arcticninja73.AUI", "AlternativeUI (AUI)", "0.1.0")]
+    [BepInPlugin("com.kkaja123." + MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
     [BepInDependency(SpaceWarpPlugin.ModGuid, SpaceWarpPlugin.ModVer)]
     public class AlternativeUIPlugin : BaseSpaceWarpPlugin
     {
+        public AUIConfigurationSettings ConfigSettings;
         public bool EnablePartsPickerToggleButton
         {
             get => _partsPickerToggleButtonIsEnabled;
@@ -58,6 +60,13 @@ namespace AUI
             protected set => _collapsedOABToolbarsUIConfiguration = value;
         }
 
+        private void Awake()
+        {
+            ConfigSettings = new AUIConfigurationSettings();
+            ConfigSettings.PluginConfig = Config;  // Delegate plugin settings to other class.
+            ConfigSettings.Logger = Logger;
+            ConfigSettings.SetUpConfig();
+        }
 
         public override void OnInitialized()
         {
@@ -369,6 +378,7 @@ namespace AUI
             pixelDeltaX = pixelDeltaX * 2;  // Return to base value
             CollapsedOABToolbarsUIConfiguration.RootWidget.sizeDelta = DefaultOABToolbarsUIConfiguration.RootWidget.sizeDelta with { x = pixelDeltaX };  // X size gets the left side of the widget near to the right side of parts picker.
         }
+
 
         protected bool _uiConfigurationsAreInitialized = false;
 
