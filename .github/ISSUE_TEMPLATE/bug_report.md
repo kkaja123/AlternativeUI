@@ -8,9 +8,9 @@ assignees: ''
 ---
 
 **Version Information**
-AUI Mod version: 
+AUI Mod version:
 Space Warp Mod version:
-KSP 2 version: (current version is 0.1.0.0.20892)
+KSP 2 version: (current version is 0.1.1.0.21572)
 
 **Describe the bug**
 A clear and concise description of what the bug is.
