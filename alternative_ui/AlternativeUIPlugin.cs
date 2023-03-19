@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using BepInEx;
 using BepInEx.Configuration;
 using KSP.Messages;
@@ -63,7 +63,7 @@ namespace AUI
         private void Awake()
         {
             ConfigSettings = new AUIConfigurationSettings();
-            ConfigSettings.PluginConfig = Config;  // Delegate plugin settings to other class.
+            ConfigSettings.PluginConfig = Config;  // Delegate plugin settings to another class.
             ConfigSettings.Logger = Logger;
             ConfigSettings.SetUpConfig();
         }
