@@ -1,6 +1,5 @@
-using System;
+﻿using System;
 using BepInEx;
-using BepInEx.Configuration;
 using KSP.Messages;
 using SpaceWarp;
 using SpaceWarp.API.Mods;
