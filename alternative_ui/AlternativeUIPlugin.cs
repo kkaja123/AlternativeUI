@@ -9,7 +9,7 @@ using UnityEngine;
 namespace AUI
 {
     [BepInPlugin("com.kkaja123." + MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
-    [BepInDependency(SpaceWarpPlugin.ModGuid, SpaceWarpPlugin.ModVer)]
+    [BepInDependency(SpaceWarpPlugin.ModGuid, "0.4.0")]
     public class AlternativeUIPlugin : BaseSpaceWarpPlugin
     {
         public AUIConfigurationSettings ConfigSettings;
