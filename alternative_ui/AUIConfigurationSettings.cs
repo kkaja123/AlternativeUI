@@ -1,9 +1,15 @@
+using System.Collections.Generic;
 using BepInEx.Configuration;
-using KSP.Game;
+using BepInEx.Logging;
 
 namespace AUI
 {
-    public class SuperEntry<T>
+    public abstract class SuperEntryBase
+    {
+        public abstract void Flush();
+    }
+
+    public class SuperEntry<T> : SuperEntryBase
     {
         public string Section = "General";
         public string Key = "";
@@ -41,15 +47,24 @@ namespace AUI
             ConfigDefinition entryDef = new ConfigDefinition(Section, Key);
             ConfigDescription entryDesc = new ConfigDescription(Description, AcceptableValues);
             Entry = config.Bind(entryDef, Value, entryDesc);
+            Flush();
+        }
+
+        public override void Flush()
+        {
+            if (Entry != null)
+            {
+                _value = Entry.Value;
+            }
         }
 
         private T _value;
     }
 
-    public class AUIConfigurationSettings : KerbalMonoBehaviour
+    public class AUIConfigurationSettings
     {
         public ConfigFile PluginConfig;
-        public BepInEx.Logging.ManualLogSource Logger;
+        public ManualLogSource Logger;
         public bool OABPartsPickerCollapseToggleIsEnabled
         {
             get => _enableOABPartsPickerCollapseToggle.Value;
@@ -62,9 +77,16 @@ namespace AUI
             set => _enableOABCenterToolbarsOnPartsPickerCollapse.Value = value;
         }
 
+        public AUIConfigurationSettings(ConfigFile config, ManualLogSource logger)
+        {
+            PluginConfig = config;
+            Logger = logger;
+        }
+
         public void AddSuperEntry<T>(SuperEntry<T> superEntry)
         {
             superEntry.BindMe(PluginConfig);
+            _entries.Add(superEntry.Key, superEntry);
         }
 
         public void SetUpConfig()
@@ -74,22 +96,36 @@ namespace AUI
             AddSuperEntry(_enableOABPartsPickerCollapseToggle);
             AddSuperEntry(_enableOABCenterToolbarsOnPartsPickerCollapse);
             // AddSuperEntry(_exampleTestStringList);
+            PluginConfig.SettingChanged += HandlePluginSettingsChanged;
         }
 
-        const string _OABSectionString = "Vehicle Assembly Building (VAB/OAB)";
-        private SuperEntry<bool> _enableOABPartsPickerCollapseToggle = new SuperEntry<bool>(
+        private void HandlePluginSettingsChanged(object sender, SettingChangedEventArgs eventArgs)
+        {
+            try
+            {
+                _entries[eventArgs.ChangedSetting.Definition.Key].Flush();
+            }
+            catch (KeyNotFoundException)
+            {
+                // The changed setting does not seem to be one from this object.
+            }
+        }
+
+        private Dictionary<string, SuperEntryBase> _entries = new Dictionary<string, SuperEntryBase>();
+        public const string _OABSectionString = "Vehicle Assembly Building (VAB/OAB)";
+        public readonly SuperEntry<bool> _enableOABPartsPickerCollapseToggle = new SuperEntry<bool>(
             _OABSectionString,
             "Collapsable Parts Picker Button",
             true,
             "A toggle button is added that will expand and collapse the parts picker drawer.");
 
-        private SuperEntry<bool> _enableOABCenterToolbarsOnPartsPickerCollapse = new SuperEntry<bool>(
+        public readonly SuperEntry<bool> _enableOABCenterToolbarsOnPartsPickerCollapse = new SuperEntry<bool>(
             _OABSectionString,
             "Auto-center Editor Toolbars When Parts Picker Collapses",
             true,
             "When the parts picker drawer is collapsed, this setting will automatically position the vehicle editing toolbars in the center of the working area. If disabled, the toolbars will remain fixed in place.");
 
-        public SuperEntry<string> _exampleTestStringList = new SuperEntry<string>(
+        public readonly SuperEntry<string> _exampleTestStringList = new SuperEntry<string>(
             "Debug Settings",
             "Tests a list of string options",
             "Default",

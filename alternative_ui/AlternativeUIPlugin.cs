@@ -1,5 +1,6 @@
 ﻿using System;
 using BepInEx;
+using BepInEx.Configuration;
 using KSP.Messages;
 using SpaceWarp;
 using SpaceWarp.API.Mods;
@@ -59,12 +60,13 @@ namespace AUI
             protected set => _collapsedOABToolbarsUIConfiguration = value;
         }
 
-        private void Awake()
+        public void Awake()
         {
-            ConfigSettings = new AUIConfigurationSettings();
-            ConfigSettings.PluginConfig = Config;  // Delegate plugin settings to another class.
-            ConfigSettings.Logger = Logger;
+            Logger.LogInfo("AUI.Awake()");
+
+            ConfigSettings = new AUIConfigurationSettings(Config, Logger);
             ConfigSettings.SetUpConfig();
+            ConfigSettings.PluginConfig.SettingChanged += HandlePluginSettingsChanged;
         }
 
         public override void OnInitialized()
@@ -129,7 +131,14 @@ namespace AUI
                 else
                 {
                     CollapsedPartsPickerUIConfiguration.ApplyUIConfiguration();
-                    CollapsedOABToolbarsUIConfiguration.ApplyUIConfiguration();
+                    if (ConfigSettings.OABCenterToolbarsOnPartsPickerCollapseIsEnabled)
+                    {
+                        CollapsedOABToolbarsUIConfiguration.ApplyUIConfiguration();
+                    }
+                    else
+                    {
+                        DefaultOABToolbarsUIConfiguration.ApplyUIConfiguration();
+                    }
                 }
 
                 _pendingPartsPickerExpandUpdate = false;
@@ -183,6 +192,7 @@ namespace AUI
             else
             {
                 Logger.LogDebug("Disabling the OAB Parts Picker Toggle button.");
+                Game.OAB.Current.OABHUD.GetCurrentPartsPicker().expandCollapseToggle.isOn = true;  // Reset toggle's state to default when disabling it.
             }
         }
 
@@ -241,10 +251,8 @@ namespace AUI
                     _uiConfigurationsAreInitialized = true;
                 }
 
-                if (EnablePartsPickerToggleButton)
-                {
-                    SetActivePartsPickerToggleButton(true);
-                }
+                // Init AUI behaviors from settings
+                SetActivePartsPickerToggleButton(ConfigSettings.OABPartsPickerCollapseToggleIsEnabled);
             }
             else
             {
@@ -378,6 +386,18 @@ namespace AUI
             CollapsedOABToolbarsUIConfiguration.RootWidget.sizeDelta = DefaultOABToolbarsUIConfiguration.RootWidget.sizeDelta with { x = pixelDeltaX };  // X size gets the left side of the widget near to the right side of parts picker.
         }
 
+        private void HandlePluginSettingsChanged(object sender, SettingChangedEventArgs eventArgs)
+        {
+            if (eventArgs.ChangedSetting.Definition.Key == ConfigSettings._enableOABPartsPickerCollapseToggle.Key)
+            {
+                SetActivePartsPickerToggleButton(ConfigSettings.OABPartsPickerCollapseToggleIsEnabled);
+            }
+
+            if (eventArgs.ChangedSetting.Definition.Section == AUIConfigurationSettings._OABSectionString)
+            {
+                _pendingPartsPickerExpandUpdate = true;
+            }
+        }
 
         protected bool _uiConfigurationsAreInitialized = false;
 
